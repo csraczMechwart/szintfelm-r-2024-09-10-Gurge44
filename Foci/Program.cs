@@ -1,13 +1,24 @@
-﻿namespace Foci;
+﻿using System.Reflection;
+
+namespace Foci;
 
 class Program
 {
     private static List<Match> Matches = [];
     private static int TaskNum;
+    private static string StoredTeamName;
 
     static void Main(string[] args)
     {
         ReadDataFromFile();
+        foreach (MethodInfo method in typeof(Program).GetMethods())
+        {
+            if (method.Name.StartsWith("Task"))
+            {
+                TaskNum = int.Parse(method.Name[4..]);
+                method.Invoke(null, null);
+            }
+        }
     }
 
     static void ReadDataFromFile()
@@ -31,11 +42,7 @@ class Program
         Matches.Add(match);
     }
 
-    static void PrintResult(string result)
-    {
-        TaskNum++;
-        Console.WriteLine($"{TaskNum}. feladat: {result}");
-    }
+    static void PrintResult(string result) => Console.WriteLine($"{TaskNum}. feladat: {result}");
 
     static int RequestNumberInput(string message)
     {
@@ -49,5 +56,35 @@ class Program
         }
 
         return int.Parse(input);
+    }
+
+    static void Task2()
+    {
+        var round = RequestNumberInput("Kérem a forduló sorszámát: ");
+        Matches.DoIf(m => m.Round == round, m => PrintResult($"{m.HomeTeam.Name}-{m.EnemyTeam.Name}: {m.HomeTeam.Goals}-{m.EnemyTeam.Goals} ({m.HomeTeam.HalftimeGoals}-{m.EnemyTeam.HalftimeGoals})"));
+    }
+
+    static void Task3()
+    {
+        Matches
+            .Where(m => m.IsHalfTimeEnemyWin() && m.IsHomeWin() || m.IsHalfTimeHomeWin() && m.IsEnemyWin())
+            .Select(m => $"{m.Round}. {m.GetWinnerTeam().Name}")
+            .Distinct()
+            .Do(PrintResult);
+    }
+
+    static void Task4()
+    {
+        Console.Write("Kérem a csapat nevét: ");
+        StoredTeamName = Console.ReadLine() ?? string.Empty;
+    }
+
+    static void Task5()
+    {
+        var matches = Matches.Where(m => m.HomeTeam.Name == StoredTeamName || m.EnemyTeam.Name == StoredTeamName).ToArray();
+        var goals = matches.Sum(m => m.HomeTeam.Name == StoredTeamName ? m.HomeTeam.Goals : m.EnemyTeam.Goals);
+        var goalsAgainst = matches.Sum(m => m.HomeTeam.Name == StoredTeamName ? m.EnemyTeam.Goals : m.HomeTeam.Goals);
+        PrintResult($"{StoredTeamName} góljainak száma: {goals}");
+        PrintResult($"{StoredTeamName} kapott góljainak száma: {goalsAgainst}");
     }
 }
