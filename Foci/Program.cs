@@ -87,4 +87,10 @@ class Program
         PrintResult($"{StoredTeamName} góljainak száma: {goals}");
         PrintResult($"{StoredTeamName} kapott góljainak száma: {goalsAgainst}");
     }
+
+    static void Task6()
+    {
+        var match = Matches.OrderBy(x => x.Round).FirstOrDefault(x => x.HomeTeam.Name == StoredTeamName && x.IsEnemyWin());
+        PrintResult(match == null ? "A csapat otthon veretlen maradt." : $"Az első vereség a(z) {match.Round}. fordulóban következett be {match.EnemyTeam.Name} csapata ellen.");
+    }
 }
