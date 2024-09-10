@@ -93,4 +93,16 @@ class Program
         var match = Matches.OrderBy(x => x.Round).FirstOrDefault(x => x.HomeTeam.Name == StoredTeamName && x.IsEnemyWin());
         PrintResult(match == null ? "A csapat otthon veretlen maradt." : $"Az első vereség a(z) {match.Round}. fordulóban következett be {match.EnemyTeam.Name} csapata ellen.");
     }
+
+    static void Task7()
+    {
+        Dictionary<(int Higher, int Lower), int> scoreDifferences = [];
+        Matches.Do(m =>
+        {
+            var scores = new[] { m.EnemyTeam.Goals, m.HomeTeam.Goals };
+            var key = (scores.Max(), scores.Min());
+            if (!scoreDifferences.TryAdd(key, 1)) scoreDifferences[key] += 1;
+        });
+        File.WriteAllLines("stat.txt", scoreDifferences.Select(x => $"{x.Key.Higher}-{x.Key.Lower}: {x.Value}"));
+    }
 }
