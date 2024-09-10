@@ -1,33 +1,35 @@
-﻿using System.Reflection;
+﻿namespace Foci;
 
-namespace Foci;
-
-class Program
+internal static class Program
 {
-    private static List<Match> Matches = [];
+    private static readonly List<Match> Matches = [];
     private static int TaskNum;
-    private static string StoredTeamName;
+    private static string? StoredTeamName;
 
-    static void Main(string[] args)
+    private static void Main()
     {
         ReadDataFromFile();
-        foreach (MethodInfo method in typeof(Program).GetMethods())
-        {
-            if (method.Name.StartsWith("Task"))
-            {
-                TaskNum = int.Parse(method.Name[4..]);
-                method.Invoke(null, null);
-            }
-        }
+        TaskNum = 2;
+        Task2();
+        TaskNum = 3;
+        Task3();
+        TaskNum = 4;
+        Task4();
+        TaskNum = 5;
+        Task5();
+        TaskNum = 6;
+        Task6();
+        TaskNum = 7;
+        Task7();
     }
 
-    static void ReadDataFromFile()
+    private static void ReadDataFromFile()
     {
         const string path = "meccs.txt";
         File.ReadAllLines(path)[1..].Do(CreateMatchFromLine);
     }
 
-    static void CreateMatchFromLine(string line)
+    private static void CreateMatchFromLine(string line)
     {
         var parts = line.Split(' ');
         var match = new Match(
@@ -42,9 +44,9 @@ class Program
         Matches.Add(match);
     }
 
-    static void PrintResult(string result) => Console.WriteLine($"{TaskNum}. feladat: {result}");
+    private static void PrintResult(string result) => Console.WriteLine($"{TaskNum}. feladat: {result}");
 
-    static int RequestNumberInput(string message)
+    private static int RequestNumberInput(string message)
     {
         Console.Write(message);
         var input = Console.ReadLine();
@@ -58,13 +60,13 @@ class Program
         return int.Parse(input);
     }
 
-    static void Task2()
+    private static void Task2()
     {
         var round = RequestNumberInput("Kérem a forduló sorszámát: ");
         Matches.DoIf(m => m.Round == round, m => PrintResult($"{m.HomeTeam.Name}-{m.EnemyTeam.Name}: {m.HomeTeam.Goals}-{m.EnemyTeam.Goals} ({m.HomeTeam.HalftimeGoals}-{m.EnemyTeam.HalftimeGoals})"));
     }
 
-    static void Task3()
+    private static void Task3()
     {
         Matches
             .Where(m => m.IsHalfTimeEnemyWin() && m.IsHomeWin() || m.IsHalfTimeHomeWin() && m.IsEnemyWin())
@@ -73,13 +75,13 @@ class Program
             .Do(PrintResult);
     }
 
-    static void Task4()
+    private static void Task4()
     {
         Console.Write("Kérem a csapat nevét: ");
         StoredTeamName = Console.ReadLine() ?? string.Empty;
     }
 
-    static void Task5()
+    private static void Task5()
     {
         var matches = Matches.Where(m => m.HomeTeam.Name == StoredTeamName || m.EnemyTeam.Name == StoredTeamName).ToArray();
         var goals = matches.Sum(m => m.HomeTeam.Name == StoredTeamName ? m.HomeTeam.Goals : m.EnemyTeam.Goals);
@@ -88,13 +90,13 @@ class Program
         PrintResult($"{StoredTeamName} kapott góljainak száma: {goalsAgainst}");
     }
 
-    static void Task6()
+    private static void Task6()
     {
         var match = Matches.OrderBy(x => x.Round).FirstOrDefault(x => x.HomeTeam.Name == StoredTeamName && x.IsEnemyWin());
         PrintResult(match == null ? "A csapat otthon veretlen maradt." : $"Az első vereség a(z) {match.Round}. fordulóban következett be {match.EnemyTeam.Name} csapata ellen.");
     }
 
-    static void Task7()
+    private static void Task7()
     {
         Dictionary<(int Higher, int Lower), int> scoreDifferences = [];
         Matches.Do(m =>
