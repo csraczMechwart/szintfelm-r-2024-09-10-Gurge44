@@ -4,10 +4,10 @@ class Program
 {
     private static List<Match> Matches = [];
     private static int TaskNum;
-    
+
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        ReadDataFromFile();
     }
 
     static void ReadDataFromFile()
@@ -36,7 +36,7 @@ class Program
         TaskNum++;
         Console.WriteLine($"{TaskNum}. feladat: {result}");
     }
-    
+
     static int RequestNumberInput(string message)
     {
         Console.Write(message);
@@ -47,7 +47,7 @@ class Program
             Console.Write(message);
             input = Console.ReadLine();
         }
-        
+
         return int.Parse(input);
     }
 }
